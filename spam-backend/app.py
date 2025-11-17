@@ -13,6 +13,19 @@ origins = [
     # "https://your-render-backend.onrender.com" is NOT needed here — backend origin isn't added as client
 ]
 
+# ensure nltk resources available at runtime (safe fallback)
+def ensure_nltk():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords')
+
+ensure_nltk()
+
 
 
 ps = PorterStemmer()
