@@ -5,6 +5,8 @@ import nltk, string
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from fastapi.middleware.cors import CORSMiddleware
+import os
+import nltk
 
 origins = [
     "http://localhost:5173",    # Vite dev server
@@ -14,17 +16,36 @@ origins = [
 ]
 
 # ensure nltk resources available at runtime (safe fallback)
-def ensure_nltk():
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt')
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords')
 
+
+# make sure nltk looks in a persistent, known location on Render
+NLTK_DATA_DIR = os.getenv("NLTK_DATA", "/opt/render/nltk_data")
+# ensure the directory exists
+os.makedirs(NLTK_DATA_DIR, exist_ok=True)
+# add it to nltk search path (highest priority)
+if NLTK_DATA_DIR not in nltk.data.path:
+    nltk.data.path.insert(0, NLTK_DATA_DIR)
+
+def ensure_nltk():
+    # download the exact resources used by your code
+    needed = ("punkt_tab", "punkt", "stopwords")
+    for pkg in needed:
+        try:
+            # try a small lookup that triggers package-specific exceptions
+            if pkg == "punkt_tab":
+                nltk.data.find("tokenizers/punkt_tab/english")
+            elif pkg == "punkt":
+                nltk.data.find("tokenizers/punkt")
+            else:
+                nltk.data.find(f"corpora/{pkg}")
+        except LookupError:
+            print(f"Downloading NLTK package: {pkg} -> {NLTK_DATA_DIR}")
+            nltk.download(pkg, download_dir=NLTK_DATA_DIR)
+    print("NLTK prepare done, paths:", nltk.data.path)
+
+# call it asap (before any tokenization)
 ensure_nltk()
+
 
 
 
