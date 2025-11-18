@@ -55,7 +55,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # or ["*"] for testing
+    allow_origins= "https://email-spam-classification-2-z0kt.onrender.com",      # or ["*"] for testing
     allow_credentials=True,
     allow_methods=["*"],        # important — allow OPTIONS/GET/POST/...
     allow_headers=["*"],        # allow Content-Type and other headers
