@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
+const API_URL = import.meta.env.VITE_API_URL || "https://email-spam-classification-1-i931.onrender.com";
+console.log("api" , API_URL)
 const HISTORY_KEY = "spam_history_v1";
 const MAX_HISTORY = 7;
 
