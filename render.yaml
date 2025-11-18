@@ -1,37 +1,29 @@
-# render.yaml - deploy both backend (Python) and frontend (static Vite) from a monorepo
-#
-# IMPORTANT: change the `root:` names below to match your actual folder names
-# e.g. if your folders are `backend` and `frontend`, replace spam-backend -> backend and spam-frontend -> frontend
-
 services:
-  - type: web
-    name: spam-backend
-    env: python
-    branch: main
+  - name: spam-backend
+    type: web
     root: spam-backend
+    env: python
     buildCommand: |
       pip install -r requirements.txt
       python - <<'PY'
-import nltk, sys
+import nltk
 for pkg in ("punkt","stopwords"):
     try:
         nltk.data.find(f"tokenizers/{pkg}" if pkg=="punkt" else f"corpora/{pkg}")
     except LookupError:
         nltk.download(pkg)
-print("NLTK data ready")
+print("NLTK ready")
 PY
-    startCommand: "uvicorn app:app --host 0.0.0.0 --port $PORT"
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: FRONTEND_ORIGIN
-        value: ""   # set the actual frontend URL in Render UI AFTER frontend deploy
+      - key: PYTHON_VERSION
+        value: 3.12.0
 
-  - type: static
-    name: spam-frontend
-    env: node
-    branch: main
+  - name: spam-frontend
+    type: static
     root: spam-frontend
-    buildCommand: "npm install && npm run build"
-    publishPath: "dist"
+    buildCommand: yarn && yarn build
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: ""  # set to backend URL after backend deploy
+        value: https://spam-backend.onrender.com
