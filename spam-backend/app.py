@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 origins = [
     "http://localhost:5173",    # Vite dev server
     "http://localhost:3000",    # if you used CRA earlier
-    "https://your-vercel-app.vercel.app",  # production frontend
+    "https://email-spam-classification-2-z0kt.onrender.com",  # production frontend
     # "https://your-render-backend.onrender.com" is NOT needed here — backend origin isn't added as client
 ]
 
